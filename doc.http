@@ -1,0 +1,9 @@
+
+
+POST http://127.0.0.1:8000/auth/users/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "matt@justdjango.com",
+    "password": "matt1234"
+}
