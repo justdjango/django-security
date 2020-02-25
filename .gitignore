@@ -7,3 +7,7 @@ build
 static
 package-lock.json
 .DS_Store
+
+# editors
+.atom
+.idea
