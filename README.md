@@ -1,29 +1,5 @@
-# Django React Boilerplate
+# Django Security Roadmap
 
-[![alt text](https://github.com/justdjango/django-react-boilerplate/blob/master/thumbnail.png "Logo")](https://youtu.be/YKYVv0gm_0o)
+This code goes alongside the Django Security roadmap
 
-This repository contains a boilerplate project setup for Django and React. The project contains backend user authentication with the Django Rest Framework and rest-auth. The frontend has react redux setup for user authentication by storing the token in localstorage.
-
-[Watch the tutorial on how to integrate Django and React](https://youtu.be/YKYVv0gm_0o)
-
-## Backend development workflow
-
-```json
-virtualenv env
-source env/bin/activate
-pip install -r requirements.txt
-python manage.py runserver
-```
-
-## Frontend development workflow
-
-```json
-npm i
-npm start
-```
-
-## For deploying
-
-```json
-npm run build
-```
+This repo goes off of the Django-React-Boilerplate project however it also contains the code for a normal Django project.
