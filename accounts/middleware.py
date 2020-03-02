@@ -15,6 +15,6 @@ class PaymentSessionMiddleware:
         return None
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if request.user.feedback_required:
-            return redirect("feedback")
+        # if request.user.feedback_required:
+        #     return redirect("feedback")
         return None

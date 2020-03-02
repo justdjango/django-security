@@ -1,8 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.sessions.models import Session
+from django.contrib.auth.decorators import login_required
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .mixins import PaymentSessionRequiredMixin
 
 
+# @login_required
 def home(request):
 
     request.session['test'] = '1234'
@@ -35,3 +40,7 @@ def session_requiring_view(request, payment_id):
     # if request.session.get('payment_id', None) is not None:
     #     return HttpResponse("Your payment id is here")
     # return HttpResponse("Your payment id is not here")
+
+
+class LoginRequiredHomeView(PaymentSessionRequiredMixin, generic.TemplateView):
+    template_name = 'home.html'
