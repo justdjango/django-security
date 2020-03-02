@@ -18,6 +18,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
 
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+
     'accounts'
 ]
 
@@ -28,6 +31,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.middleware.PaymentSessionMiddleware',
@@ -49,6 +53,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.from_settings'
             ],
         },
     },
@@ -67,6 +72,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'accounts.User'
+OTP_TOTP_ISSUER = 'Django Security Tutorial'
+ENVIRONMENT_NAME = 'Development'
+ENVIRONMENT_COLOR = 'gray'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
