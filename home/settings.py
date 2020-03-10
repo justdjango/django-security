@@ -1,10 +1,19 @@
+import environ
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))))
-SECRET_KEY = '-05sgp9!deq=q1nltm@^^2cc+v29i(tyybv3v2t77qi66czazj'
-DEBUG = True
-ALLOWED_HOSTS = []
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+# reading .env file
+environ.Env.read_env()
+
+BASE_DIR = os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__)))
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -59,6 +68,19 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = 'home.wsgi.application'
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+)
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -84,3 +106,29 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
 }
+
+if not DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': env('db_name'),
+            'USER': env('db_user'),
+            'PASSWORD': env('db_password'),
+            'HOST': env('db_localhost'),
+            'PORT': env('db_port'),
+        }
+    }
+
+    ALLOWED_HOSTS = ['http://domain.com']
+
+    ENVIRONMENT_NAME = 'Production'
+    ENVIRONMENT_COLOR = 'red'
+
+    AUTH_PASSWORD_VALIDATORS = [
+        {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+        {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+        {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+        {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    ]
+
+    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'

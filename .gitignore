@@ -12,3 +12,5 @@ package-lock.json
 .vscode
 .atom
 .idea
+
+.env
