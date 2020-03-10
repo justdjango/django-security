@@ -15,11 +15,11 @@ def home(request):
     request.session.set_test_cookie()
     if request.method == "POST":
 
-        session = Session.objects.get(pk='2qbixpobhkcdt7s7ewb6x646b4v9vp72')
-        print(session.session_key)
-        print(session.session_data)
-        print(session.expire_date)
-        print(session.get_decoded())
+        # session = Session.objects.get(pk='2qbixpobhkcdt7s7ewb6x646b4v9vp72')
+        # print(session.session_key)
+        # print(session.session_data)
+        # print(session.expire_date)
+        # print(session.get_decoded())
 
         test = request.session['test']
         print(test)

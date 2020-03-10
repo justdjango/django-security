@@ -13,11 +13,11 @@ class User(AbstractUser):
 
     # option 1
     # e.g Staff, Client, Manager, etc.
-    user_type = models.CharField(max_length=100)
+    # user_type = models.CharField(max_length=100)
 
-    # option 2
-    is_client = models.BooleanField(default=True)
-    is_manager = models.BooleanField(default=False)
+    # # option 2
+    # is_client = models.BooleanField(default=True)
+    # is_manager = models.BooleanField(default=False)
 
     objects = UserManager()
 
