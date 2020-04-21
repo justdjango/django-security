@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Column list</h1>
+<a href="{% url 'columns:column-create' %}">Create a column</a>
+<hr />
+{% for column in object_list %}
+    <a href="{% url 'columns:column-detail' column.id %}">{{ column.name }}</a>
+    <br />
+{% endfor %}
+
+{% endblock content %}

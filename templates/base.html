@@ -1,0 +1,15 @@
+
+My user: {{ request.user.email }}
+
+{% if request.user.is_authenticated %}
+{% if request.user.userprofile.user_type == 'Reader' %}
+    <a href="{% url 'accounts:feed' %}">My feed</a>
+{% endif %}
+<a href="{% url 'account_logout' %}">Logout</a>
+{% else %}
+<a href="{% url 'account_login' %}">Login</a>
+{% endif %}
+<br />
+{% block content %}
+
+{% endblock content %}

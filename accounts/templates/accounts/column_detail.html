@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Column: {{ object.name }}</h1>
+<a href="{% url 'columns:column-list' %}">Back to all columns</a>
+
+    {% if not request.user.userprofile.user_type == 'Reader' %}
+
+    <h4>Coordinator: {{ column.coordinator.email }}</h4>
+    <hr />
+
+    <h4>Writers</h4>
+    {% for writer in column.writers.all %}
+        <p>{{ writer.email }}</p>
+    {% endfor %}
+    <hr />
+
+    <h4>Moderators</h4>
+    {% for moderator in column.moderators.all %}
+        <p>{{ moderator.email }}</p>
+    {% endfor %}
+
+    <hr />
+
+    {% endif %}
+
+    {% if request.user.userprofile.user_type == 'Reader' %}
+        {% if not subscribed %}
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Subscribe to this column</button>
+        </form>
+        {% else %}
+        <p>You are subscribed</p>
+        {% endif %}
+    {% endif %}
+
+    <h4>Posts</h4>
+    {% for post in column.post_set.all %}
+        <a href="{% url 'accounts:post-detail' post.id %}">{{ post.title }}</a>
+    {% endfor %}
+
+{% endblock content %}

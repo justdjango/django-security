@@ -1,46 +1,124 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib.sessions.models import Session
 from django.contrib.auth.decorators import login_required
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .mixins import PaymentSessionRequiredMixin
+from django.shortcuts import reverse, redirect, get_object_or_404
+from .models import Column, Post, Subscription
+from .forms import ColumnForm, PostForm, SubscribeForm
+from .mixins import (
+    ValidCoordinatorMixin, ValidWriterMixin, ValidModeratorMixin,
+    ModeratorHasAccessMixin
+)
 
 
-# @login_required
-def home(request):
-
-    request.session['test'] = '1234'
-    request.session['payment_id'] = 348329482
-    request.session.set_test_cookie()
-    if request.method == "POST":
-
-        # session = Session.objects.get(pk='2qbixpobhkcdt7s7ewb6x646b4v9vp72')
-        # print(session.session_key)
-        # print(session.session_data)
-        # print(session.expire_date)
-        # print(session.get_decoded())
-
-        test = request.session['test']
-        print(test)
-
-        # if request.session.test_cookie_worked():
-        #     request.session.delete_test_cookie()
-        #     return HttpResponse("You're logged in")
-        # else:
-        #     return HttpResponse("Your browser does not support cookies")
-    return render(request, "home.html")
+class ColumnListView(generic.ListView):
+    model = Column
+    template_name = 'accounts/column_list.html'
 
 
-def session_requiring_view(request, payment_id):
-    if int(payment_id) == 348329482:  # the users payment id - linked with some foreignkey
-        return HttpResponse("Your payment id is here")
-    return HttpResponse("Your payment id is not here")
+class ColumnDetailView(generic.FormView):
+    form_class = SubscribeForm
+    template_name = 'accounts/column_detail.html'
 
-    # if request.session.get('payment_id', None) is not None:
-    #     return HttpResponse("Your payment id is here")
-    # return HttpResponse("Your payment id is not here")
+    def get_success_url(self):
+        return reverse("accounts:column-detail", kwargs={
+            'pk': self.kwargs['pk']
+        })
+
+    def form_valid(self, form):
+        if not self.request.user.userprofile.user_type == 'Reader':
+            # message notification saying they cant subscribe
+            return redirect(reverse("accounts:column-detail", kwargs={
+                'pk': self.kwargs['pk']
+            }))
+        column = get_object_or_404(Column, id=self.kwargs['pk'])
+        Subscription.objects.get_or_create(
+            reader=self.request.user,
+            column=column
+        )
+        return super(ColumnDetailView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(ColumnDetailView, self).get_context_data(**kwargs)
+        column = Column.objects.get(id=self.kwargs['pk'])
+        context['subscribed'] = False
+        try:
+            Subscription.objects.get(
+                reader=self.request.user,
+                column=column
+            )
+            context['subscribed'] = True
+        except Subscription.DoesNotExist:
+            pass
+        context.update({
+            "object": column
+        })
+        return context
 
 
-class LoginRequiredHomeView(PaymentSessionRequiredMixin, generic.TemplateView):
-    template_name = 'home.html'
+class ColumnCreateView(LoginRequiredMixin, ValidCoordinatorMixin, generic.CreateView):
+    model = Column
+    form_class = ColumnForm
+    template_name = 'accounts/column_create.html'
+
+    def get_success_url(self):
+        return reverse("columns:column-list")
+
+    def form_valid(self, form):
+        column = form.save(commit=False)
+        column.coordinator = self.request.user
+        column.save()
+        return super(ColumnCreateView, self).form_valid(form)
+
+
+class PostCreateView(LoginRequiredMixin, ValidWriterMixin, generic.CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'accounts/post_create.html'
+
+    def get_success_url(self):
+        return reverse("columns:column-list")
+
+    def get_form_kwargs(self):
+        kwargs = super(PostCreateView, self).get_form_kwargs()
+        kwargs.update({
+            "user_id": self.request.user.id
+        })
+        return kwargs
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.writer = self.request.user
+        post.save()
+        return super(PostCreateView, self).form_valid(form)
+
+
+class ModeratorPostListView(LoginRequiredMixin, ValidModeratorMixin, generic.ListView):
+    template_name = 'accounts/moderator_post_list.html'
+
+    def get_queryset(self):
+        columns = list(
+            self.request.user.moderators_columns.values_list('id', flat=True))
+        qs = Post.objects.filter(column__id__in=columns)
+        return qs
+
+
+class PostDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Post
+    template_name = 'accounts/post_detail.html'
+
+
+class ModeratorMarkAsPublic(LoginRequiredMixin, ValidModeratorMixin, ModeratorHasAccessMixin, generic.View):
+    def get(self, request, *args, **kwargs):
+        post = Post.objects.get(id=kwargs['pk'])
+        post.public = True
+        post.save()
+        return redirect(reverse("accounts:post-detail", kwargs={'pk': kwargs['pk']}))
+
+
+class ColumnFeedView(LoginRequiredMixin, generic.ListView):
+    template_name = 'accounts/feed.html'
+
+    def get_queryset(self):
+        # return Subscription.objects.filter(reader=self.request.user)
+        return self.request.user.user_subscriptions.all()

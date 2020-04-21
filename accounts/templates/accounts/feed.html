@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>My Feed</h1>
+<hr />
+{% for subscription in object_list %}
+    <a href="{% url 'columns:column-detail' subscription.column.id %}">
+    {{ subscription.column.name }}
+    </a>
+    <br />
+{% endfor %}
+
+{% endblock content %}

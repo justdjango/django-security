@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{% url 'columns:column-detail' object.column.id %}">Back to all posts</a>
+
+    <h4>Writer: {{ object.writer.email }}</h4>
+    <hr />
+
+    {{ object.title }}
+
+{% if request.user.userprofile.user_type == 'Moderator' %}
+    {% if not object.public %}
+    <a href="{% url 'accounts:mark-as-public' object.id %}">Mark as public</a>
+    {% else %}
+    <p>This post is public</p>
+    {% endif %}
+{% endif %}
+
+{% endblock content %}

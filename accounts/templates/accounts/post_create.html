@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Post Create</h1>
+<a href="{% url 'columns:column-list' %}">Back to all posts</a>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type='submit'>Submit</button>
+</form>
+
+{% endblock content %}
