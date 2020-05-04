@@ -1,28 +1,33 @@
 from django.test import TestCase
-from django.urls import reverse
 
 
-class TestHomeView(TestCase):
+class DemoTest(TestCase):
+    """
+    setUp
+    setUpClass
+    setUpTestData
 
-    def test_get(self):
-        url = reverse('home')
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
+    """
 
-    def test_post(self):
-        url = reverse('home')
-        resp = self.client.post(url)
-        self.assertEqual(resp.status_code, 200)
+    def setUp(self):
+        """Once per test"""
+        pass
 
+    def setUpClass(cls):
+        """Once per TestCase class"""
+        pass
 
-class TestSessionRequiringView(TestCase):
+    def setUpTestData(cls):
+        """Once per TestCase class"""
+        pass
 
-    def test_valid_param(self):
-        url = reverse('session-view', kwargs={'payment_id': 348329482})
-        resp = self.client.get(url)
-        self.assertContains(resp, "Your payment id is here")
+    def test_some_func(self):
+        pass
 
-    def test_invalid_param(self):
-        url = reverse('session-view', kwargs={'payment_id': 123321})
-        resp = self.client.get(url)
-        self.assertContains(resp, "Your payment id is not here")
+    def tearDown(self):
+        """Once per test"""
+        pass
+
+    def tearDownClass(cls):
+        """Once per TestCase class"""
+        pass
