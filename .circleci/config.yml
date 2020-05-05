@@ -31,10 +31,12 @@ jobs:
       - run:
           name: "Run tests"
           command: |
+            . venv/bin/activate
             python manage.py test
       - run:
           name: "Run security checks"
           command: |
+            . venv/bin/activate
             python manage.py check --deploy --fail-level ERROR
       - store_artifacts:
           path: test-reports/
