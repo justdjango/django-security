@@ -1,5 +1,6 @@
 import environ
 import os
+import sys
 
 env = environ.Env(
     # set casting, default value
@@ -8,6 +9,7 @@ env = environ.Env(
 
 # reading .env file
 environ.Env.read_env()
+TESTING = sys.argv[1] == "test"
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))
@@ -121,14 +123,22 @@ REST_FRAMEWORK = {
 }
 
 if not DEBUG:
+    if TESTING:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            }
+        }
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': env('db_name'),
-            'USER': env('db_user'),
-            'PASSWORD': env('db_password'),
-            'HOST': env('db_localhost'),
-            'PORT': env('db_port'),
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT'),
         }
     }
 
