@@ -33,3 +33,6 @@ jobs:
       - name: "Run tests"
         run: |
           python manage.py test
+      - name: "Run security checks"
+        run: |
+          python manage.py check --deploy --fail-level ERROR
