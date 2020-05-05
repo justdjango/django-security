@@ -135,6 +135,7 @@ if not DEBUG:
     X_FRAME_OPTIONS = "DENY"
 
     if TESTING:
+        SECURE_SSL_REDIRECT = False
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
