@@ -6,6 +6,16 @@ on:
       - assignment-1-tests
 
 jobs:
+
+  env:
+    SECRET_KEY: ${{ secrets.SECRET_KEY }}
+    DEBUG: True
+    DB_NAME: 123
+    DB_USER: 123
+    DB_PASSWORD: 123
+    DB_HOST: 123
+    DB_PORT: 123
+
   build:
     runs-on: ubuntu-latest
     steps:
