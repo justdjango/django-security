@@ -1,0 +1,41 @@
+version: 2.1
+
+workflows:
+  test_and_release:
+    jobs:
+      - build:
+          context: django_security
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run:
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: "Run code analysis"
+          command: |
+            . venv/bin/activate
+            git ls-files | grep -v 'migrations' | grep -v 'settings.py' | grep -v 'manage.py' | grep -E '.py$' | xargs pylint -E --load-plugins=pylint_django
+      - run:
+          name: "Run tests"
+          command: |
+            python manage.py test
+      - run:
+          name: "Run security checks"
+          command: |
+            python manage.py check --deploy --fail-level ERROR
+      - store_artifacts:
+          path: test-reports/
+          destination: python_app
