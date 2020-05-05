@@ -1,0 +1,60 @@
+version: v1.0
+name: Test and Release
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Install Dependencies
+    task:
+      jobs:
+        - name: Install and cache dependencies
+          commands:
+            - sem-version python 3.7
+            - checkout
+            - pip download --cache-dir .pip_cache -r requirements.txt
+            - cache store
+
+  - name: Run code analysis
+    task:
+      prologue:
+        commands:
+          - sem-version python 3.7
+          - checkout
+          - cache restore
+          - pip install -r requirements.txt --cache-dir .pip_cache
+      jobs:
+        - name: Analysis with Pylint
+          commands:
+            - git ls-files | grep -v 'migrations' | grep -v 'settings.py' | grep -v 'manage.py' | grep -E '.py$' | xargs pylint -E --load-plugins=pylint_django
+
+  - name: Run tests
+    task:
+      secrets:
+        - name: Security Env Variables
+      prologue:
+        commands:
+          - sem-version python 3.7
+          - checkout
+          - cache restore
+          - pip install -r requirements.txt --cache-dir .pip_cache
+      jobs:
+        - name: Django unit tests
+          commands:
+            - python manage.py test
+            
+  - name: Run security checks
+    task:
+      secrets:
+        - name: Security Env Variables
+      prologue:
+        commands:
+          - sem-version python 3.7
+          - checkout
+          - cache restore
+          - pip install -r requirements.txt --cache-dir .pip_cache
+      jobs:
+        - name: Django security checks
+          commands:
+            - python manage.py check --deploy --fail-level ERROR
+          
