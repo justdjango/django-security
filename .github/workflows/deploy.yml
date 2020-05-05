@@ -21,3 +21,6 @@ jobs:
       - name: "Run code analysis"
         run: |
           git ls-files | grep -v 'migrations' | grep -v 'settings.py' | grep -v 'manage.py' | grep -E '.py$' | xargs pylint -E --load-plugins=pylint_django
+      - name: "Run tests"
+        run: |
+          python manage.py test
