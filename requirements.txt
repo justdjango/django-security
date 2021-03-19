@@ -10,7 +10,7 @@ django-environ==0.4.5
 django-otp==0.9.0
 django-rest-auth==0.9.5
 django-templated-mail==1.1.1
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 djoser==2.0.3
 gunicorn==19.9.0
 idna==2.8
